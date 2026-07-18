@@ -16,6 +16,7 @@ namespace TrafficLightDemo.FSM
     {
         Idle,
         Active,
+        Pause,
     }
 
     public enum TrafficLightState
@@ -78,6 +79,7 @@ namespace TrafficLightDemo.FSM
             yellowDurationSeconds = newYellowDurationSeconds;
             redDurationSeconds = newRedDurationSeconds;
             stateTimer.Reset();
+            mainState = MainState.Idle;
             trafficLightState = TrafficLightState.Green;
         }
 
@@ -90,7 +92,7 @@ namespace TrafficLightDemo.FSM
 
         private void btnPause_Click(object sender, EventArgs e)
         {
-            mainState = MainState.Idle;
+            mainState = MainState.Pause;
             stateTimer.Stop();
             SetRunButtons(isRunning: false);
         }
@@ -155,10 +157,10 @@ namespace TrafficLightDemo.FSM
                         }
                         break;
 
+                    case MainState.Pause:
+                        // 保留目前燈號與經過時間，等待使用者繼續。
+                        break;
                 }
-                
-
-                Thread.Sleep(10);
             }
         }
 
