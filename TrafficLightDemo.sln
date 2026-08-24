@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrafficLightDemo.ManualRese
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrafficLightDemo.FSM", "TrafficLightDemo.FSM\TrafficLightDemo.FSM.csproj", "{3F9A98E3-7493-4C94-9F82-788FA80CF088}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TrafficLightDemo.FSM.Interface", "TrafficLightDemo.FSM.Interface\TrafficLightDemo.FSM.Interface.csproj", "{A6C33E7B-11CB-4D1E-A725-8E704CC338A2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{3F9A98E3-7493-4C94-9F82-788FA80CF088}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F9A98E3-7493-4C94-9F82-788FA80CF088}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F9A98E3-7493-4C94-9F82-788FA80CF088}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6C33E7B-11CB-4D1E-A725-8E704CC338A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6C33E7B-11CB-4D1E-A725-8E704CC338A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6C33E7B-11CB-4D1E-A725-8E704CC338A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6C33E7B-11CB-4D1E-A725-8E704CC338A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
