@@ -53,7 +53,7 @@
     <Compile Include="Outputs\PanelTrafficLightOutput.cs" />
     <Compile Include="Outputs\TextTrafficLightOutput.cs" />
     <Compile Include="Outputs\FakeTrafficLightOutput.cs" />
-    <Compile Include="Practice\DebugTrafficLightOutput.cs" />
+    <Compile Include="Practice\ListBoxTrafficLightOutput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

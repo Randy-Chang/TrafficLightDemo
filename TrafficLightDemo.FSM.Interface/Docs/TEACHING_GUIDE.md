@@ -47,9 +47,9 @@ Controller 不知道輸出是 Panel、Label 或 Fake。切換 ComboBox 時只重
 
 ## 新人作業
 
-不要先替新人完成所有功能。請從 `Practice/PRACTICE.md` 開始，依序進行程式追蹤、完成 `DebugTrafficLightOutput`，最後再挑戰 Emergency Stop。
+不要先替新人完成所有功能。請從 `Practice/PRACTICE.md` 開始，依序進行程式追蹤、完成 `ListBoxTrafficLightOutput`，最後再挑戰 Emergency Stop。
 
-其中 `Practice/DebugTrafficLightOutput.cs` 可以編譯，但 TODO 與 UI 串接刻意尚未完成，作為新人真正需要動手修改的部分。
+其中 `Practice/ListBoxTrafficLightOutput.cs` 可以編譯，但 TODO、ListBox、下拉選項與 UI 串接刻意尚未完成，作為新人真正需要動手修改的部分。
 
 ## 與 LBT4500 的對照
 

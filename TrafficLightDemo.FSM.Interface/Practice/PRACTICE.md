@@ -1,6 +1,6 @@
 # 新人動手練習
 
-這個專案中的 Panel、Text、Fake Output 是完成版參考；`DebugTrafficLightOutput` 刻意只留下可編譯的骨架。
+這個專案中的 Panel、Text、Fake Output 是完成版參考；`ListBoxTrafficLightOutput` 刻意只留下可編譯的骨架。
 
 ## 第一關：先追蹤，不改架構
 
@@ -11,19 +11,21 @@
 
 ## 第二關：完成新的 Interface 實作
 
-目標：完成 `DebugTrafficLightOutput`，並讓使用者可以從下拉選單選到它。
+目標：完成 `ListBoxTrafficLightOutput`，在畫面上保留每一次燈號切換紀錄，並讓使用者可以從下拉選單選到它。
 
-1. 完成 `DebugTrafficLightOutput.Show` 的 TODO。
-2. 在 Designer 的 Output 下拉選單加入 `DebugTrafficLightOutput`。
-3. 在 `MainForm.CreateControllerWithSelectedOutput` 建立並注入新實作。
-4. 啟動 FSM，在 Visual Studio「輸出」視窗確認 Green、Yellow、Red 訊息。
+1. 使用 WinForms Designer 在畫面加入一個 `ListBox`，命名為 `historyListBox`。
+2. 完成 `ListBoxTrafficLightOutput.Show` 的 TODO，將目前時間及狀態加入 ListBox。
+3. 在 Designer 的 Output 下拉選單加入 `ListBoxTrafficLightOutput`。
+4. 在 `MainForm.CreateControllerWithSelectedOutput` 建立物件，將 `historyListBox` 傳入建構式，再注入 Controller。
+5. 啟動 FSM，確認畫面依序保留 Green、Yellow、Red 紀錄。
 
 限制：不得修改 `TrafficLightController`。
 
 驗收時請回答：
 
 - 新實作遵守哪個 Interface？
-- 是誰建立 `DebugTrafficLightOutput`？
+- 是誰建立 `ListBoxTrafficLightOutput`？
+- `historyListBox` 是透過什麼方式交給它的？
 - 是誰把它傳給 `TrafficLightController`？
 - 為什麼新增輸出方式時，FSM 不需要修改？
 
