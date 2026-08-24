@@ -10,17 +10,18 @@
 
 ## 職責分離
 
-| 類別 | 責任 |
+| 資料夾／類別 | 責任 |
 |---|---|
-| `MainForm.cs` | UI 事件、使用者輸入與物件組裝 |
-| `MainForm.Designer.cs` | WinForms 控制項宣告與畫面配置 |
-| `MainForm.resx` | WinForms Designer 使用的表單資源 |
-| `TrafficLightController` | FSM、燈號切換與時間規則 |
-| `ITrafficLightOutput` | 定義顯示燈號狀態的能力 |
+| `UI/MainForm.cs` | UI 事件、使用者輸入與物件組裝 |
+| `UI/MainForm.Designer.cs` | WinForms 控制項宣告與畫面配置 |
+| `UI/MainForm.resx` | WinForms Designer 使用的表單資源 |
+| `FSM/TrafficLightController` | FSM、燈號切換與時間規則 |
+| `FSM/StateTimer` | 計算目前狀態經過時間 |
+| `Outputs/ITrafficLightOutput` | 定義顯示燈號狀態的能力 |
 | `PanelTrafficLightOutput` | 用 Panel 顯示 |
 | `TextTrafficLightOutput` | 用 Label 顯示 |
 | `FakeTrafficLightOutput` | 不操作 UI，只記錄狀態供測試 |
-| `StateTimer` | 計算目前狀態經過時間 |
+| `Practice` | 刻意保留給新人完成的練習骨架與題目 |
 
 ## 教學重點
 
@@ -46,13 +47,9 @@ Controller 不知道輸出是 Panel、Label 或 Fake。切換 ComboBox 時只重
 
 ## 新人作業
 
-新增 `DebugTrafficLightOutput`，將狀態寫到 `Debug.WriteLine`，並加入下拉選單。限制：不得修改 `TrafficLightController`。
+不要先替新人完成所有功能。請從 `Practice/PRACTICE.md` 開始，依序進行程式追蹤、完成 `DebugTrafficLightOutput`，最後再挑戰 Emergency Stop。
 
-完成後請說明：
-
-- 新增了哪一個實作？
-- 哪裡選擇該實作？
-- Controller 為什麼不需要修改？
+其中 `Practice/DebugTrafficLightOutput.cs` 可以編譯，但 TODO 與 UI 串接刻意尚未完成，作為新人真正需要動手修改的部分。
 
 ## 與 LBT4500 的對照
 

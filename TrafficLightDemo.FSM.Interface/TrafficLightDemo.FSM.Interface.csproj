@@ -39,30 +39,32 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MainForm.cs">
+    <Compile Include="UI\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
+    <Compile Include="UI\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
-    <Compile Include="TrafficLightTypes.cs" />
-    <Compile Include="StateTimer.cs" />
-    <Compile Include="ITrafficLightOutput.cs" />
-    <Compile Include="PanelTrafficLightOutput.cs" />
-    <Compile Include="TextTrafficLightOutput.cs" />
-    <Compile Include="FakeTrafficLightOutput.cs" />
-    <Compile Include="TrafficLightController.cs" />
+    <Compile Include="FSM\TrafficLightTypes.cs" />
+    <Compile Include="FSM\StateTimer.cs" />
+    <Compile Include="FSM\TrafficLightController.cs" />
+    <Compile Include="Outputs\ITrafficLightOutput.cs" />
+    <Compile Include="Outputs\PanelTrafficLightOutput.cs" />
+    <Compile Include="Outputs\TextTrafficLightOutput.cs" />
+    <Compile Include="Outputs\FakeTrafficLightOutput.cs" />
+    <Compile Include="Practice\DebugTrafficLightOutput.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="MainForm.resx">
+    <EmbeddedResource Include="UI\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="TEACHING_GUIDE.md" />
+    <None Include="Docs\TEACHING_GUIDE.md" />
+    <None Include="Practice\PRACTICE.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
