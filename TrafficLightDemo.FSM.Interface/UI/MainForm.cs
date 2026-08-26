@@ -1,6 +1,5 @@
 using System;
 using System.Drawing;
-using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -99,30 +98,28 @@ namespace TrafficLightDemo.FSM.Interface
             while (!isClosing)
             {
                 Thread.Sleep(20);
-
-                if (IsDisposed || !IsHandleCreated)
-                {
-                    continue;
-                }
-
-                try
-                {
-                    BeginInvoke(new Action(UpdateTrafficLight));
-                }
-                catch (InvalidOperationException)
-                {
-                    break;
-                }
+                UpdateTrafficLight();
             }
         }
 
         private void UpdateTrafficLight()
         {
+            if (InvokeRequired)
+            {
+                if (IsDisposed || !IsHandleCreated)
+                {
+                    return;
+                }
+
+                BeginInvoke(new Action(UpdateTrafficLight));
+                return;
+            }
+
             controller.Update();
 
             if (fakeOutput != null)
             {
-                string history = string.Join(" → ", fakeOutput.History.Select(state => state.ToString()));
+                string history = string.Join(" -> ", fakeOutput.History);
                 lbOutputStatus.Text = $"FAKE HISTORY : {history}";
                 lbOutputStatus.ForeColor = Color.DarkSlateBlue;
             }
