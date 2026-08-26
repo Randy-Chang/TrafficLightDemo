@@ -106,25 +106,21 @@ namespace TrafficLightDemo.FSM.Interface
         {
             if (InvokeRequired)
             {
-                if (IsDisposed || !IsHandleCreated)
+                BeginInvoke(new Action(UpdateTrafficLight));
+            }
+            else
+            {
+                controller.Update();
+
+                if (fakeOutput != null)
                 {
-                    return;
+                    string history = string.Join(" -> ", fakeOutput.History);
+                    lbOutputStatus.Text = $"FAKE HISTORY : {history}";
+                    lbOutputStatus.ForeColor = Color.DarkSlateBlue;
                 }
 
-                BeginInvoke(new Action(UpdateTrafficLight));
-                return;
+                UpdateStatusLabels();
             }
-
-            controller.Update();
-
-            if (fakeOutput != null)
-            {
-                string history = string.Join(" -> ", fakeOutput.History);
-                lbOutputStatus.Text = $"FAKE HISTORY : {history}";
-                lbOutputStatus.ForeColor = Color.DarkSlateBlue;
-            }
-
-            UpdateStatusLabels();
         }
 
         #endregion
