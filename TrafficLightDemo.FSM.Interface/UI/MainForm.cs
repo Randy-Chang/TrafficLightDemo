@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace TrafficLightDemo.FSM.Interface
@@ -11,21 +12,42 @@ namespace TrafficLightDemo.FSM.Interface
     /// </summary>
     public sealed partial class MainForm : Form
     {
+        #region Fields
+
         private TrafficLightController controller;
         private FakeTrafficLightOutput fakeOutput;
+        private Thread trafficLightWorkerThread;
+        private volatile bool isClosing;
+
+        #endregion
+
+        #region Constructor and form lifecycle
 
         public MainForm()
         {
             InitializeComponent();
-        }
+            InitializeOutputComboBox();
 
-        private void MainForm_Load(object sender, EventArgs e)
-        {
-            // 執行期初始化放在 Load，避免 Visual Studio Designer 載入時啟動狀態機。
+            btnApplyDurations.Click += btnApplyDurations_Click;
+            btnStart.Click += btnStart_Click;
+            btnPause.Click += btnPause_Click;
+            btnReset.Click += btnReset_Click;
+            cbOutput.SelectedIndexChanged += cbOutput_SelectedIndexChanged;
+
             CreateControllerWithSelectedOutput();
-            updateTimer.Start();
+            StartTrafficLightWorker();
             SetRunButtons(isRunning: false);
         }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            isClosing = true;
+            base.OnFormClosing(e);
+        }
+
+        #endregion
+
+        #region Composition root
 
         /// <summary>
         /// 這裡是本範例的 Composition Root：選擇實作並注入 Controller。
@@ -36,22 +58,22 @@ namespace TrafficLightDemo.FSM.Interface
             fakeOutput = null;
 
             ITrafficLightOutput output;
-            switch (outputComboBox.SelectedIndex)
+            switch (cbOutput.SelectedIndex)
             {
                 case 1:
-                    output = new TextTrafficLightOutput(outputStatusLabel);
-                    explanationLabel.Text = "TextTrafficLightOutput：使用 Label 顯示，同一個 Controller 不需要修改。";
+                    output = new TextTrafficLightOutput(lbOutputStatus);
+                    lbExplanation.Text = "TextTrafficLightOutput：使用 Label 顯示，同一個 Controller 不需要修改。";
                     break;
 
                 case 2:
                     fakeOutput = new FakeTrafficLightOutput();
                     output = fakeOutput;
-                    explanationLabel.Text = "FakeTrafficLightOutput：不操作 UI 或硬體，只記錄收到的狀態，可供測試使用。";
+                    lbExplanation.Text = "FakeTrafficLightOutput：不操作 UI 或硬體，只記錄收到的狀態，可供測試使用。";
                     break;
 
                 default:
-                    output = new PanelTrafficLightOutput(greenPanel, yellowPanel, redPanel);
-                    explanationLabel.Text = "PanelTrafficLightOutput：使用三個 WinForms Panel 顯示燈號。";
+                    output = new PanelTrafficLightOutput(plGreenLight, plYellowLight, plRedLight);
+                    lbExplanation.Text = "PanelTrafficLightOutput：使用三個 WinForms Panel 顯示燈號。";
                     break;
             }
 
@@ -61,38 +83,75 @@ namespace TrafficLightDemo.FSM.Interface
             UpdateStatusLabels();
         }
 
-        private void UpdateTimer_Tick(object sender, EventArgs e)
+        #endregion
+
+        #region Traffic-light state machine
+
+        private void StartTrafficLightWorker()
+        {
+            trafficLightWorkerThread = new Thread(RunTrafficLightStateMachine);
+            trafficLightWorkerThread.IsBackground = true;
+            trafficLightWorkerThread.Start();
+        }
+
+        private void RunTrafficLightStateMachine()
+        {
+            while (!isClosing)
+            {
+                Thread.Sleep(20);
+
+                if (IsDisposed || !IsHandleCreated)
+                {
+                    continue;
+                }
+
+                try
+                {
+                    BeginInvoke(new Action(UpdateTrafficLight));
+                }
+                catch (InvalidOperationException)
+                {
+                    break;
+                }
+            }
+        }
+
+        private void UpdateTrafficLight()
         {
             controller.Update();
 
             if (fakeOutput != null)
             {
                 string history = string.Join(" → ", fakeOutput.History.Select(state => state.ToString()));
-                outputStatusLabel.Text = $"FAKE HISTORY : {history}";
-                outputStatusLabel.ForeColor = Color.DarkSlateBlue;
+                lbOutputStatus.Text = $"FAKE HISTORY : {history}";
+                lbOutputStatus.ForeColor = Color.DarkSlateBlue;
             }
 
             UpdateStatusLabels();
         }
 
-        private void ApplyButton_Click(object sender, EventArgs e)
+        #endregion
+
+        #region UI events
+
+        private void btnApplyDurations_Click(object sender, EventArgs e)
         {
             ApplyDurations(showValidationMessage: true);
         }
 
-        private void StartButton_Click(object sender, EventArgs e)
+        private void btnStart_Click(object sender, EventArgs e)
         {
             controller.Start();
             SetRunButtons(isRunning: true);
         }
 
-        private void PauseButton_Click(object sender, EventArgs e)
+        private void btnPause_Click(object sender, EventArgs e)
         {
             controller.Pause();
             SetRunButtons(isRunning: false);
         }
 
-        private void ResetButton_Click(object sender, EventArgs e)
+        private void btnReset_Click(object sender, EventArgs e)
         {
             controller.Reset();
             if (fakeOutput != null)
@@ -105,20 +164,32 @@ namespace TrafficLightDemo.FSM.Interface
             UpdateStatusLabels();
         }
 
-        private void OutputComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void cbOutput_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (outputComboBox.SelectedIndex >= 0)
+            if (cbOutput.SelectedIndex >= 0)
             {
                 CreateControllerWithSelectedOutput();
                 SetRunButtons(isRunning: false);
             }
         }
 
+        #endregion
+
+        #region UI helpers
+
+        private void InitializeOutputComboBox()
+        {
+            cbOutput.Items.Add("PanelTrafficLightOutput");
+            cbOutput.Items.Add("TextTrafficLightOutput");
+            cbOutput.Items.Add("FakeTrafficLightOutput");
+            cbOutput.SelectedIndex = 0;
+        }
+
         private bool ApplyDurations(bool showValidationMessage)
         {
-            if (!TryReadPositiveSeconds(greenDurationTextBox, "綠燈", out int greenSeconds) ||
-                !TryReadPositiveSeconds(yellowDurationTextBox, "黃燈", out int yellowSeconds) ||
-                !TryReadPositiveSeconds(redDurationTextBox, "紅燈", out int redSeconds))
+            if (!TryReadPositiveSeconds(tbGreenDuration, "綠燈", out int greenSeconds) ||
+                !TryReadPositiveSeconds(tbYellowDuration, "黃燈", out int yellowSeconds) ||
+                !TryReadPositiveSeconds(tbRedDuration, "紅燈", out int redSeconds))
             {
                 if (showValidationMessage)
                 {
@@ -135,29 +206,29 @@ namespace TrafficLightDemo.FSM.Interface
 
         private void UpdateStatusLabels()
         {
-            elapsedTimeLabel.Text = $"Timer : {controller.ElapsedSeconds}";
-            mainStateLabel.Text = $"MainState : {controller.MainState}";
-            lightStateLabel.Text = $"LightState : {controller.CurrentState}";
+            lbElapsedTime.Text = $"Timer : {controller.ElapsedSeconds}";
+            lbMainState.Text = $"MainState : {controller.MainState}";
+            lbLightState.Text = $"LightState : {controller.CurrentState}";
         }
 
         private void SetRunButtons(bool isRunning)
         {
-            startButton.Enabled = !isRunning;
-            pauseButton.Enabled = isRunning;
-            outputComboBox.Enabled = !isRunning;
-            applyButton.Enabled = !isRunning;
-            greenDurationTextBox.Enabled = !isRunning;
-            yellowDurationTextBox.Enabled = !isRunning;
-            redDurationTextBox.Enabled = !isRunning;
+            btnStart.Enabled = !isRunning;
+            btnPause.Enabled = isRunning;
+            cbOutput.Enabled = !isRunning;
+            btnApplyDurations.Enabled = !isRunning;
+            tbGreenDuration.Enabled = !isRunning;
+            tbYellowDuration.Enabled = !isRunning;
+            tbRedDuration.Enabled = !isRunning;
         }
 
         private void ClearVisibleOutputs()
         {
-            greenPanel.BackColor = Color.Black;
-            yellowPanel.BackColor = Color.Black;
-            redPanel.BackColor = Color.Black;
-            outputStatusLabel.Text = string.Empty;
-            outputStatusLabel.ForeColor = Color.Black;
+            plGreenLight.BackColor = Color.Black;
+            plYellowLight.BackColor = Color.Black;
+            plRedLight.BackColor = Color.Black;
+            lbOutputStatus.Text = string.Empty;
+            lbOutputStatus.ForeColor = Color.Black;
         }
 
         private static bool TryReadPositiveSeconds(TextBox textBox, string name, out int seconds)
@@ -172,5 +243,7 @@ namespace TrafficLightDemo.FSM.Interface
             textBox.AccessibleDescription = $"{name}時間必須大於 0";
             return false;
         }
+
+        #endregion
     }
 }

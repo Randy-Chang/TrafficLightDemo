@@ -60,15 +60,26 @@ namespace TrafficLightDemo.FSM.Interface
         }
 
         /// <summary>
-        /// 每次 Tick 只處理目前狀態，不阻塞 UI Thread。
+        /// 每次呼叫只處理目前狀態，不阻塞 UI Thread。
         /// </summary>
         public void Update()
         {
-            if (MainState != MainState.Active)
+            switch (MainState)
             {
-                return;
-            }
+                case MainState.Idle:
+                    break;
 
+                case MainState.Active:
+                    UpdateActiveState();
+                    break;
+
+                case MainState.Pause:
+                    break;
+            }
+        }
+
+        private void UpdateActiveState()
+        {
             output.Show(CurrentState);
 
             switch (CurrentState)
@@ -100,7 +111,6 @@ namespace TrafficLightDemo.FSM.Interface
         {
             CurrentState = nextState;
             stateTimer.Restart();
-            output.Show(CurrentState);
         }
     }
 }
